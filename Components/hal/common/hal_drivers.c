@@ -55,6 +55,7 @@
 #include "hal_key.h"
 #include "hal_lcd.h"
 #include "hal_led.h"
+#include "hal_gpio.h"
 #include "hal_sleep.h"
 #include "hal_timer.h"
 #include "hal_types.h"
@@ -139,7 +140,7 @@ void HalDriverInit (void)
 #if (defined HAL_LED) && (HAL_LED == TRUE)
   HalLedInit();
 #endif
-
+  HalGpioInit();
   /* UART */
 #if (defined HAL_UART) && (HAL_UART == TRUE)
   HalUARTInit();

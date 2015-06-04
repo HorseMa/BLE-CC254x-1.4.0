@@ -49,7 +49,8 @@
 
 #include "hal_led.h"
 #include "hal_key.h"
-
+#include "npi.h"
+#include "simpleBLEPeripheral.h"
 
 /*********************************************************************
  * MACROS
@@ -107,6 +108,56 @@ static uint8 registeredKeysTaskID = NO_TASK_ID;
  * @param   level: COLD,WARM,READY
  * @return  None
  */
+extern uint8 simpleBLEPeripheral_TaskID;   // Task ID for internal task/event processing
+void npiCBack_uart( uint8 port, uint8 event )
+{
+  /*uint16 usRxBufLen = Hal_UART_RxBufLen(HAL_UART_PORT_0); // 读取接收据量
+
+　if(usRxBufLen)
+　{
+    usRxBufLen = MIN(128，usRxBufLen);
+
+　　uint16 readLen = HalUARTRead(HAL_UART_PORT_0， &SerialRxBuf［RxIndex］， usRxBufLen); // 读取数据到缓冲区
+
+　　RxIndex += readLen;
+
+　　readLen %= 128;
+
+　　osal_start_timerEx(simpleBLEPeripheral_TaskID, SBP_READ_ZM516X_INFO_EVT 5); // 启动定时器
+
+　}*/
+  if(port == NPI_UART_PORT)
+  {
+    if(event & HAL_UART_RX_FULL)
+    {
+      osal_set_event( simpleBLEPeripheral_TaskID, UART_RECEIVE_EVT );
+    }
+    if(event & HAL_UART_RX_ABOUT_FULL)
+    {
+      osal_set_event( simpleBLEPeripheral_TaskID, UART_RECEIVE_EVT );
+    }
+    if(event & HAL_UART_RX_TIMEOUT)
+    {
+      osal_set_event( simpleBLEPeripheral_TaskID, UART_RECEIVE_EVT );
+    }
+    if(event & HAL_UART_TX_FULL)
+    {
+      //osal_set_event( simpleBLEPeripheral_TaskID, UART_RECEIVE_EVT );
+    }
+    if(event & HAL_UART_TX_EMPTY)
+    {
+      //osal_set_event( simpleBLEPeripheral_TaskID, UART_RECEIVE_EVT );
+    }
+  }
+  return;
+}
+
+/*********************************************************************
+ * @fn      InitBoard()
+ * @brief   Initialize the CC2540DB Board Peripherals
+ * @param   level: COLD,WARM,READY
+ * @return  None
+ */
 void InitBoard( uint8 level )
 {
   if ( level == OB_COLD )
@@ -121,6 +172,7 @@ void InitBoard( uint8 level )
   else  // !OB_COLD
   {
     /* Initialize Key stuff */
+    NPI_InitTransport(npiCBack_uart);
     OnboardKeyIntEnable = HAL_KEY_INTERRUPT_ENABLE;
     HalKeyConfig( OnboardKeyIntEnable, OnBoard_KeyCallback);
   }

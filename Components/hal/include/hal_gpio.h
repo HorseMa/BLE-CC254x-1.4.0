@@ -1,12 +1,12 @@
 /**************************************************************************************************
-  Filename:       simpleBLEperipheral.h
-  Revised:        $Date: 2010-08-01 14:03:16 -0700 (Sun, 01 Aug 2010) $
-  Revision:       $Revision: 23256 $
+  Filename:       hal_led.h
+  Revised:        $Date: 2007-07-06 10:42:24 -0700 (Fri, 06 Jul 2007) $
+  Revision:       $Revision: 13579 $
 
-  Description:    This file contains the Simple BLE Peripheral sample application
-                  definitions and prototypes.
+  Description:    This file contains the interface to the LED Service.
 
-  Copyright 2010 - 2011 Texas Instruments Incorporated. All rights reserved.
+
+  Copyright 2005-2007 Texas Instruments Incorporated. All rights reserved.
 
   IMPORTANT: Your use of this Software is limited to those specific rights
   granted under the terms of a software license agreement between the user
@@ -22,8 +22,8 @@
   its documentation for any purpose.
 
   YOU FURTHER ACKNOWLEDGE AND AGREE THAT THE SOFTWARE AND DOCUMENTATION ARE
-  PROVIDED “AS IS” WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-  INCLUDING WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, TITLE,
+  PROVIDED “AS IS” WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, 
+  INCLUDING WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, TITLE, 
   NON-INFRINGEMENT AND FITNESS FOR A PARTICULAR PURPOSE. IN NO EVENT SHALL
   TEXAS INSTRUMENTS OR ITS LICENSORS BE LIABLE OR OBLIGATED UNDER CONTRACT,
   NEGLIGENCE, STRICT LIABILITY, CONTRIBUTION, BREACH OF WARRANTY, OR OTHER
@@ -34,11 +34,11 @@
   (INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
 
   Should you have any questions regarding your right to use this Software,
-  contact Texas Instruments Incorporated at www.TI.com.
+  contact Texas Instruments Incorporated at www.TI.com. 
 **************************************************************************************************/
 
-#ifndef SIMPLEBLEPERIPHERAL_H
-#define SIMPLEBLEPERIPHERAL_H
+#ifndef HAL_GPIO_H
+#define HAL_GPIO_H
 
 #ifdef __cplusplus
 extern "C"
@@ -48,35 +48,52 @@ extern "C"
 /*********************************************************************
  * INCLUDES
  */
-
-/*********************************************************************
- * CONSTANTS
- */
-
-
-// Simple BLE Peripheral Task Events
-#define SBP_START_DEVICE_EVT                              0x0001
-#define SBP_PERIODIC_EVT                                  0x0002
-#define SBP_READ_ZM516X_INFO_EVT                          0x0004
-#define UART_RECEIVE_EVT                                  0x0008
+#include "hal_board.h"
 
 /*********************************************************************
  * MACROS
  */
 
 /*********************************************************************
- * FUNCTIONS
+ * CONSTANTS
+ */
+
+/* LEDS - The LED number is the same as the bit position */
+#define HAL_GPIO_ZM516X_RESET     0x01
+#define HAL_GPIO_ZM516X_DEF     0x02
+#define HAL_GPIO_ZM516X_SLEEP     0x04
+#define HAL_GPIO_ZM516X_WAKEUP     0x08
+#define HAL_GPIO_ZM516X_MOTOR1     0x10
+#define HAL_GPIO_ZM516X_MOTOR2     0x20 
+#define HAL_GPIO_ZM516X_ALL   (HAL_GPIO_ZM516X_RESET | HAL_GPIO_ZM516X_DEF | HAL_GPIO_ZM516X_SLEEP | HAL_GPIO_ZM516X_WAKEUP | HAL_GPIO_ZM516X_MOTOR1 | HAL_GPIO_ZM516X_MOTOR1)
+#define HAL_GPIO_ZM516X_KEY1     0x80
+#define HAL_GPIO_ZM516X_KEY2     0x40 
+
+/* Defaults */
+#define HAL_LED_DEFAULT_MAX_LEDS      4
+#define HAL_LED_DEFAULT_DUTY_CYCLE    5
+#define HAL_LED_DEFAULT_FLASH_COUNT   50
+#define HAL_LED_DEFAULT_FLASH_TIME    1000
+
+/*********************************************************************
+ * TYPEDEFS
+ */
+
+
+/*********************************************************************
+ * GLOBAL VARIABLES
  */
 
 /*
- * Task Initialization for the BLE Application
+ * Initialize LED Service.
  */
-extern void SimpleBLEPeripheral_Init( uint8 task_id );
+extern void HalGpioInit( void );
 
 /*
- * Task Event Processor for the BLE Application
+ * Set the LED ON/OFF/TOGGLE.
  */
-extern uint16 SimpleBLEPeripheral_ProcessEvent( uint8 task_id, uint16 events );
+extern uint8 HalGpioSet( uint8 led, uint8 mode );
+
 
 /*********************************************************************
 *********************************************************************/
@@ -85,4 +102,4 @@ extern uint16 SimpleBLEPeripheral_ProcessEvent( uint8 task_id, uint16 events );
 }
 #endif
 
-#endif /* SIMPLEBLEPERIPHERAL_H */
+#endif

@@ -99,33 +99,33 @@
 #define HAL_KEY_DEBOUNCE_VALUE  25
 
 /* CPU port interrupt */
-#define HAL_KEY_CPU_PORT_0_IF P0IF
+#define HAL_KEY_CPU_PORT_1_IF P1IF
 #define HAL_KEY_CPU_PORT_2_IF P2IF
 
 #if defined ( CC2540_MINIDK )
 /* SW_1 is at P0.0 */
-#define HAL_KEY_SW_1_PORT   P0
+#define HAL_KEY_SW_1_PORT   P1
 #define HAL_KEY_SW_1_BIT    BV(0)
-#define HAL_KEY_SW_1_SEL    P0SEL
-#define HAL_KEY_SW_1_DIR    P0DIR
+#define HAL_KEY_SW_1_SEL    P1SEL
+#define HAL_KEY_SW_1_DIR    P1DIR
 
 /* SW_2 is at P0.1 */
-#define HAL_KEY_SW_2_PORT   P0
+#define HAL_KEY_SW_2_PORT   P1
 #define HAL_KEY_SW_2_BIT    BV(1)
-#define HAL_KEY_SW_2_SEL    P0SEL
-#define HAL_KEY_SW_2_DIR    P0DIR
+#define HAL_KEY_SW_2_SEL    P1SEL
+#define HAL_KEY_SW_2_DIR    P1DIR
 
-#define HAL_KEY_SW_1_IEN      IEN1  /* CPU interrupt mask register */
-#define HAL_KEY_SW_1_ICTL     P0IEN /* Port Interrupt Control register */
+#define HAL_KEY_SW_1_IEN      IEN2  /* CPU interrupt mask register */
+#define HAL_KEY_SW_1_ICTL     P1IEN /* Port Interrupt Control register */
 #define HAL_KEY_SW_1_ICTLBIT  BV(0) /* P0IEN - P0.0 enable/disable bit */
-#define HAL_KEY_SW_1_IENBIT   BV(5) /* Mask bit for all of Port_0 */
+#define HAL_KEY_SW_1_IENBIT   BV(4) /* Mask bit for all of Port_0 */
 
-#define HAL_KEY_SW_1_PXIFG    P0IFG /* Interrupt flag at source */
-#define HAL_KEY_SW_2_IEN      IEN1  /* CPU interrupt mask register */
-#define HAL_KEY_SW_2_ICTL     P0IEN /* Port Interrupt Control register */
+#define HAL_KEY_SW_1_PXIFG    P1IFG /* Interrupt flag at source */
+#define HAL_KEY_SW_2_IEN      IEN2  /* CPU interrupt mask register */
+#define HAL_KEY_SW_2_ICTL     P1IEN /* Port Interrupt Control register */
 #define HAL_KEY_SW_2_ICTLBIT  BV(1) /* P0IEN - P0.1 enable/disable bit */
-#define HAL_KEY_SW_2_IENBIT   BV(5) /* Mask bit for all of Port_0 */
-#define HAL_KEY_SW_2_PXIFG    P0IFG /* Interrupt flag at source */
+#define HAL_KEY_SW_2_IENBIT   BV(4) /* Mask bit for all of Port_0 */
+#define HAL_KEY_SW_2_PXIFG    P1IFG /* Interrupt flag at source */
 
 #define HAL_KEY_SW_1_EDGEBIT  BV(0)
 
@@ -571,7 +571,7 @@ uint8 HalKeyExitSleep ( void )
  *
  * @return
  **************************************************************************************************/
-HAL_ISR_FUNCTION( halKeyPort0Isr, P0INT_VECTOR )
+HAL_ISR_FUNCTION( halKeyPort1Isr, P1INT_VECTOR )
 {
   HAL_ENTER_ISR();
 
@@ -594,7 +594,7 @@ HAL_ISR_FUNCTION( halKeyPort0Isr, P0INT_VECTOR )
 #else
   HAL_KEY_SW_6_PXIFG = 0;
 #endif
-  HAL_KEY_CPU_PORT_0_IF = 0;
+  HAL_KEY_CPU_PORT_1_IF = 0;
 
   CLEAR_SLEEP_MODE();
 

@@ -24,6 +24,7 @@ $RECYCLE.BIN/
 *.hex
 *.sim
 *.map
+*.html
 
 
 # Windows shortcuts
