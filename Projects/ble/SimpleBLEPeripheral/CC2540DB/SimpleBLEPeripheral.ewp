@@ -277,6 +277,9 @@
           <state>HAL_KEY=TRUE</state>
           <state>HAL_UART=TRUE</state>
           <state>ZAPP_P1</state>
+          <state>MAKE_CRC_SHDW</state>
+          <state>FEATURE_SBL</state>
+          <state>OAD_KEEP_NV_PAGES</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -715,7 +718,7 @@
       <archiveVersion>1</archiveVersion>
       <data>
         <prebuild></prebuild>
-        <postbuild></postbuild>
+        <postbuild>"$PROJ_DIR$\..\..\common\cc2540\cc254x_ubl_pp.bat" "$PROJ_DIR$" "ProdUBL" "$PROJ_DIR$\CC2540DK-MINI Keyfob\Exe\SimpleBLEPeripheral"</postbuild>
       </data>
     </settings>
     <settings>
@@ -727,7 +730,7 @@
         <debug>1</debug>
         <option>
           <name>XOutOverride</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>OutputFile</name>
@@ -797,7 +800,7 @@
         </option>
         <option>
           <name>XclFile</name>
-          <state>$PROJ_DIR$\..\..\common\cc2540\ti_51ew_cc2540b.xcl</state>
+          <state>$PROJ_DIR$\..\..\common\cc2540\cc254x_f256_sbl.xcl</state>
         </option>
         <option>
           <name>XclFileSlave</name>
@@ -929,16 +932,16 @@
         </option>
         <option>
           <name>XExtraOutOverride</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>ExtraOutputFile</name>
-          <state>SimpleBLEPeripheral.hex</state>
+          <state>SimpleBLEPeripheral.sim</state>
         </option>
         <option>
           <name>ExtraOutputFormat</name>
           <version>11</version>
-          <state>23</state>
+          <state>60</state>
         </option>
         <option>
           <name>ExtraFormatVariant</name>
