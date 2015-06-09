@@ -555,9 +555,8 @@ readloacalcfg:
         break;
       case 5:
         HalGpioSet(HAL_GPIO_ZM516X_RESET,1);
-        
-        state = 6;
         osal_set_event( simpleBLEPeripheral_TaskID, BOARD_TEST_EVT );
+        state = 6;
         break;
       case 6:
         len = NPI_RxBufLen();
@@ -587,23 +586,34 @@ readloacalcfg:
     const unsigned char readadc[] = {0xDE, 0xDF, 0xEF, 0xD7, 0x20, 0x01, 0x01};
     static unsigned char wbuf[255];
     static unsigned char state = 0;
-    osal_memcpy(wbuf,setiodir,7);
-    osal_memcpy(&wbuf[4],stDevInfo.devLoacalNetAddr,2);
-    NPI_WriteTransport(wbuf, 7);
+
     switch(state)
     {
       case 0:
-      osal_memcpy(wbuf,setio,7);
+      osal_memcpy(wbuf,setiodir,7);
       osal_memcpy(&wbuf[4],stDevInfo.devLoacalNetAddr,2);
-      state = 1;
+      NPI_WriteTransport(wbuf, 7);
       osal_start_timerEx( task_id, BOARD_TEST_EVT, 200 );
+      state = 1;
       break;
       case 1:
       osal_memcpy(wbuf,setio,7);
+      osal_memcpy(&wbuf[4],stDevInfo.devLoacalNetAddr,2);
+      NPI_WriteTransport(wbuf, 7);
+      HalGpioSet(HAL_GPIO_ZM516X_MOTOR1,1);
+      HalGpioSet(HAL_GPIO_ZM516X_MOTOR2,0);
+      state = 2;
+      osal_start_timerEx( simpleBLEPeripheral_TaskID, BOARD_TEST_EVT, 1000 );
+      break;
+      case 2:
+      osal_memcpy(wbuf,setio,7);
       wbuf[6] = ~0x7C;
       osal_memcpy(&wbuf[4],stDevInfo.devLoacalNetAddr,2);
-      state = 0;
-      osal_start_timerEx( task_id, BOARD_TEST_EVT, 200 );
+      NPI_WriteTransport(wbuf, 7);
+      HalGpioSet(HAL_GPIO_ZM516X_MOTOR1,1);
+      HalGpioSet(HAL_GPIO_ZM516X_MOTOR2,1);
+      state = 1;
+      osal_start_timerEx( simpleBLEPeripheral_TaskID, BOARD_TEST_EVT, 1000 );
       break;
       default:
       break;
