@@ -108,26 +108,26 @@ extern "C"
 #define LED1_POLARITY                  ACTIVE_HIGH
 
 #define GPIO_ZM516X_RESET_BV    BV(3)
-#define GPIO_ZM516X_DEF_BV    BV(2)
-#define GPIO_ZM516X_WAKEUP_BV    BV(7)
-#define GPIO_ZM516X_SLEEP_BV    BV(6)
+#define GPIO_ZM516X_DEF_BV    BV(6)
+#define GPIO_ZM516X_WAKEUP_BV    BV(2)
+#define GPIO_ZM516X_SLEEP_BV    BV(7)
 #define GPIO_ZM516X_MOTOR1_BV    BV(6)
 #define GPIO_ZM516X_MOTOR2_BV    BV(7)
 #define GPIO_ZM516X_KEY1_BV    BV(0)
 #define GPIO_ZM516X_KEY2_BV    BV(1)
    
 #define GPIO_ZM516X_RESET_SBIT    P1_3
-#define GPIO_ZM516X_DEF_SBIT    P1_2
-#define GPIO_ZM516X_WAKEUP_SBIT    P0_7
-#define GPIO_ZM516X_SLEEP_SBIT    P0_6
+#define GPIO_ZM516X_DEF_SBIT    P0_6
+#define GPIO_ZM516X_WAKEUP_SBIT    P1_2
+#define GPIO_ZM516X_SLEEP_SBIT    P0_7
 #define GPIO_ZM516X_MOTOR1_SBIT    P1_6
 #define GPIO_ZM516X_MOTOR2_SBIT    P1_7
 #define GPIO_ZM516X_KEY1_SBIT    P1_0
 #define GPIO_ZM516X_KEY2_SBIT    P1_1
 
 #define GPIO_ZM516X_RESET_DDR                       P1DIR
-#define GPIO_ZM516X_DEF_DDR                       P1DIR
-#define GPIO_ZM516X_WAKEUP_DDR                       P0DIR
+#define GPIO_ZM516X_DEF_DDR                       P0DIR
+#define GPIO_ZM516X_WAKEUP_DDR                       P1DIR
 #define GPIO_ZM516X_SLEEP_DDR                       P0DIR
 #define GPIO_ZM516X_MOTOR1_DDR                       P1DIR
 #define GPIO_ZM516X_MOTOR2_DDR                       P1DIR

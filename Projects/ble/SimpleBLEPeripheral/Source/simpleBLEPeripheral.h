@@ -59,6 +59,7 @@ extern "C"
 #define SBP_PERIODIC_EVT                                  0x0002
 #define SBP_READ_ZM516X_INFO_EVT                          0x0004
 #define UART_RECEIVE_EVT                                  0x0008
+#define BOARD_TEST_EVT                                    0x0010
 
 /*********************************************************************
  * MACROS
