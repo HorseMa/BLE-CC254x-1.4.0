@@ -276,26 +276,38 @@ readloacalcfg:
     switch(state)
     {
       case 0:
-      osal_memcpy(wbuf,setiodir,7);
+      /*osal_memcpy(wbuf,setiodir,7);
       osal_memcpy(&wbuf[4],stDevInfo.devLoacalNetAddr,2);
-      NPI_WriteTransport(wbuf, 7);
-      osal_start_timerEx( task_id, BOARD_TEST_EVT, 200 );
+      NPI_WriteTransport(wbuf, 7);*/
+      osal_start_timerEx( zigbee_TaskID, BOARD_TEST_EVT, 200 );
       state = 1;
       break;
       case 1:
-      osal_memcpy(wbuf,setio,7);
+      /*osal_memcpy(wbuf,setio,7);
       osal_memcpy(&wbuf[4],stDevInfo.devLoacalNetAddr,2);
-      NPI_WriteTransport(wbuf, 7);
+      NPI_WriteTransport(wbuf, 7);*/
       HalGpioSet(HAL_GPIO_ZM516X_MOTOR1,1);
       HalGpioSet(HAL_GPIO_ZM516X_MOTOR2,0);
       state = 2;
       osal_start_timerEx( zigbee_TaskID, BOARD_TEST_EVT, 1000 );
       break;
       case 2:
-      osal_memcpy(wbuf,setio,7);
+      /*osal_memcpy(wbuf,setio,7);
       wbuf[6] = ~0x7C;
       osal_memcpy(&wbuf[4],stDevInfo.devLoacalNetAddr,2);
-      NPI_WriteTransport(wbuf, 7);
+      NPI_WriteTransport(wbuf, 7);*/
+      HalGpioSet(HAL_GPIO_ZM516X_MOTOR1,1);
+      HalGpioSet(HAL_GPIO_ZM516X_MOTOR2,1);
+      state = 3;
+      osal_start_timerEx( zigbee_TaskID, BOARD_TEST_EVT, 1000 );
+      break;
+      case 3:
+      HalGpioSet(HAL_GPIO_ZM516X_MOTOR1,0);
+      HalGpioSet(HAL_GPIO_ZM516X_MOTOR2,1);
+      state = 4;
+      osal_start_timerEx( zigbee_TaskID, BOARD_TEST_EVT, 1000 );
+      break;
+      case 4:
       HalGpioSet(HAL_GPIO_ZM516X_MOTOR1,1);
       HalGpioSet(HAL_GPIO_ZM516X_MOTOR2,1);
       state = 1;
@@ -344,7 +356,7 @@ readloacalcfg:
   if ( events & ZIGBEE_START_DEVICE_EVT )
   {
     // Get zm516x info
-    osal_set_event( zigbee_TaskID, ZIGBEE_READ_ZM516X_INFO_EVT );
+    osal_set_event( zigbee_TaskID, BOARD_TEST_EVT );
 
     return ( events ^ ZIGBEE_START_DEVICE_EVT );
   }
