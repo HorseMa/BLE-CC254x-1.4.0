@@ -8593,6 +8593,9 @@
       <name>$PROJ_DIR$\..\Source\SimpleBLEPeripheral_Main.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\Source\zigbee.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\Source\zlgAtCmd.c</name>
     </file>
   </group>

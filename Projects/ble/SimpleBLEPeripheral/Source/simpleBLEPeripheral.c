@@ -50,7 +50,7 @@
 #include "hal_led.h"
 #include "hal_key.h"
 #include "hal_lcd.h"
-#include "zlgAtCmd.h"
+
 #include "gatt.h"
 
 #include "hci.h"
@@ -74,8 +74,7 @@
   #include "oad.h"
   #include "oad_target.h"
 #endif
-#include "npi.h"
-#include "hal_gpio.h"
+
 /*********************************************************************
  * MACROS
  */
@@ -144,7 +143,7 @@
 /*********************************************************************
  * LOCAL VARIABLES
  */
-uint8 simpleBLEPeripheral_TaskID;   // Task ID for internal task/event processing
+static uint8 simpleBLEPeripheral_TaskID;   // Task ID for internal task/event processing
 
 static gaprole_States_t gapProfileState = GAPROLE_INIT;
 
@@ -368,10 +367,9 @@ void SimpleBLEPeripheral_Init( uint8 task_id )
   SK_AddService( GATT_ALL_SERVICES ); // Simple Keys Profile
 
   // Register for all key events - This app will handle all key events
-  RegisterForKeys( simpleBLEPeripheral_TaskID );
-
-  // makes sure LEDs are off
+  //RegisterForKeys( simpleBLEPeripheral_TaskID );
 #if 0
+  // makes sure LEDs are off
   HalLedSet( (HAL_LED_1 | HAL_LED_2), HAL_LED_MODE_OFF );
 
   // For keyfob board set GPIO pins into a power-optimized state
@@ -444,7 +442,7 @@ uint16 SimpleBLEPeripheral_ProcessEvent( uint8 task_id, uint16 events )
 {
 
   VOID task_id; // OSAL required parameter that isn't used in this function
-  static unsigned char led = 0;
+
   if ( events & SYS_EVENT_MSG )
   {
     uint8 *pMsg;
@@ -460,201 +458,7 @@ uint16 SimpleBLEPeripheral_ProcessEvent( uint8 task_id, uint16 events )
     // return unprocessed events
     return (events ^ SYS_EVENT_MSG);
   }
-  
-  if(events & SBP_READ_ZM516X_INFO_EVT)
-  {
-    static unsigned char state = 0;
-    unsigned char len;
-    unsigned int i;
-    unsigned char sum;
-    static unsigned char wbuf[255],rbuf[255];
-    static unsigned char cnt = 0;
-    HalGpioSet(HAL_GPIO_ZM516X_ALL,1);
-    
 
-    switch(state)
-    {
-      case 0:
-        HalGpioSet(HAL_GPIO_ZM516X_ALL,1);
-        HalGpioSet(HAL_GPIO_ZM516X_DEF,0);
-        HalGpioSet(HAL_GPIO_ZM516X_RESET,0);
-        //HalGpioSet(HAL_GPIO_ZM516X_SLEEP,1);
-        osal_start_timerEx( task_id, SBP_READ_ZM516X_INFO_EVT, 100 );
-        state = 1;
-        break;
-      case 1:
-        HalGpioSet(HAL_GPIO_ZM516X_RESET,1);
-        osal_start_timerEx( task_id, SBP_READ_ZM516X_INFO_EVT, 100 );
-        state = 2;
-        break;
-      case 2:
-readloacalcfg:
-        HalGpioSet(HAL_GPIO_ZM516X_DEF,1);
-        //HalGpioSet(HAL_GPIO_ZM516X_SLEEP,0);
-        NPI_ReadTransport(rbuf,NPI_RxBufLen());  // clear uart buffer
-        wbuf[0] = 0xab;
-        wbuf[1] = 0xbc;
-        wbuf[2] = 0xcd;
-        wbuf[3] = enReadLoacalCfg;
-        wbuf[4] = wbuf[0] + wbuf[1] + wbuf[2] + wbuf[3];
-        NPI_WriteTransport(wbuf, 5);
-        state = 3;
-        break;
-      case 3:
-        len = NPI_RxBufLen();
-        cnt ++;
-        if(len >= 74)
-        {
-          osal_memset(rbuf,0,128);
-          NPI_ReadTransport(rbuf,74);
-          if((rbuf[0] == 0xab)
-          &&(rbuf[1] == 0xbc)
-          &&(rbuf[2] == 0xcd)
-          &&(rbuf[3] == enReadLoacalCfg))
-          {
-            osal_memcpy(&stDevInfo,&rbuf[4],sizeof(struct dev_info));
-            rbuf[0] = 0xab;
-            rbuf[1] = 0xbc;
-            rbuf[2] = 0xcd;
-            rbuf[3] = enModifyCfg;
-            rbuf[4] = stDevInfo.devLoacalNetAddr[0];
-            rbuf[5] = stDevInfo.devLoacalNetAddr[1];
-            stDevInfo.devLoacalNetAddr[0] = 0x00;
-            stDevInfo.devLoacalNetAddr[1] = 0x01;
-            stDevInfo.devChannel = 0x19;
-            stDevInfo.devPanid[0] = 0x10;
-            stDevInfo.devPanid[1] = 0x01;
-            osal_memcpy(&rbuf[6],&stDevInfo,65);
-            sum = 0;
-            for(i = 0;i < (6 + 65);i++)
-            {
-              sum += rbuf[i];
-            }
-            rbuf[6 + 65] = sum;
-            NPI_WriteTransport(rbuf, 6 + 65 + 1);
-            state = 4;
-          }
-          else
-          {
-            goto readloacalcfg;
-          }
-        }
-        break;
-      case 4:
-        len = NPI_RxBufLen();
-        
-        if(len == 7)
-        {
-          NPI_ReadTransport(rbuf,7);
-          //osal_start_timerEx( task_id, SBP_READ_ZM516X_INFO_EVT, 100 );
-          //break;
-          HalGpioSet(HAL_GPIO_ZM516X_RESET,0);
-          osal_start_timerEx( task_id, SBP_READ_ZM516X_INFO_EVT, 100 );
-          state = 5;
-        }
-        break;
-      case 5:
-        HalGpioSet(HAL_GPIO_ZM516X_RESET,1);
-        osal_set_event( simpleBLEPeripheral_TaskID, BOARD_TEST_EVT );
-        state = 6;
-        break;
-      case 6:
-        len = NPI_RxBufLen();
-        if(len >= 13)
-        {
-          NPI_ReadTransport(rbuf,13);
-          led = !led;
-          if(led)
-          {
-            HalGpioSet(HAL_GPIO_ZM516X_MOTOR1,1);
-            HalGpioSet(HAL_GPIO_ZM516X_MOTOR2,0);
-          }
-          else
-          {
-            HalGpioSet(HAL_GPIO_ZM516X_MOTOR1,0);
-            HalGpioSet(HAL_GPIO_ZM516X_MOTOR2,1);
-          }
-        }
-    }
-
-    return ( events ^ SBP_READ_ZM516X_INFO_EVT );
-  }
-  if(events & BOARD_TEST_EVT)
-  {
-    const unsigned char setiodir[] = {0xDE, 0xDF, 0xEF, 0xD4, 0x20, 0x01, 0x7C};
-    const unsigned char setio[] = {0xDE, 0xDF, 0xEF, 0xD6, 0x20, 0x01, 0x7C};
-    const unsigned char readadc[] = {0xDE, 0xDF, 0xEF, 0xD7, 0x20, 0x01, 0x01};
-    static unsigned char wbuf[255];
-    static unsigned char state = 0;
-
-    switch(state)
-    {
-      case 0:
-      osal_memcpy(wbuf,setiodir,7);
-      osal_memcpy(&wbuf[4],stDevInfo.devLoacalNetAddr,2);
-      NPI_WriteTransport(wbuf, 7);
-      osal_start_timerEx( task_id, BOARD_TEST_EVT, 200 );
-      state = 1;
-      break;
-      case 1:
-      osal_memcpy(wbuf,setio,7);
-      osal_memcpy(&wbuf[4],stDevInfo.devLoacalNetAddr,2);
-      NPI_WriteTransport(wbuf, 7);
-      HalGpioSet(HAL_GPIO_ZM516X_MOTOR1,1);
-      HalGpioSet(HAL_GPIO_ZM516X_MOTOR2,0);
-      state = 2;
-      osal_start_timerEx( simpleBLEPeripheral_TaskID, BOARD_TEST_EVT, 1000 );
-      break;
-      case 2:
-      osal_memcpy(wbuf,setio,7);
-      wbuf[6] = ~0x7C;
-      osal_memcpy(&wbuf[4],stDevInfo.devLoacalNetAddr,2);
-      NPI_WriteTransport(wbuf, 7);
-      HalGpioSet(HAL_GPIO_ZM516X_MOTOR1,1);
-      HalGpioSet(HAL_GPIO_ZM516X_MOTOR2,1);
-      state = 1;
-      osal_start_timerEx( simpleBLEPeripheral_TaskID, BOARD_TEST_EVT, 1000 );
-      break;
-      default:
-      break;
-    }
-    
-    return ( events ^ BOARD_TEST_EVT );
-  }
-#if 1
-  if(events & UART_RECEIVE_EVT)
-  {
-    static unsigned char lenold = 0;
-    unsigned char len = 0;
-    //; NPI_ReadTransport(buf,len);
-    if((len = NPI_RxBufLen()) > 0)
-    {
-      if(lenold == len)
-      {
-        osal_set_event( task_id, SBP_READ_ZM516X_INFO_EVT );
-        lenold = 0;
-      }
-      else
-      {
-        lenold = len;
-        osal_stop_timerEx( task_id, UART_RECEIVE_EVT );
-        osal_start_timerEx( task_id, UART_RECEIVE_EVT, 3 );
-      }
-      return ( events ^ UART_RECEIVE_EVT );
-    }
-    else
-    {
-      //if(lenold > 0)
-      //osal_set_event( task_id, SBP_READ_ZM516X_INFO_EVT );
-      //lenold = len;
-      //osal_start_timerEx( task_id, UART_RECEIVE_EVT, 10 );
-      //osal_set_event( task_id, SBP_READ_ZM516X_INFO_EVT );
-      return ( events ^ UART_RECEIVE_EVT );
-    }
-    
-    
-  }
-#endif
   if ( events & SBP_START_DEVICE_EVT )
   {
     // Start the Device
@@ -665,9 +469,6 @@ readloacalcfg:
 
     // Set timer for first periodic event
     osal_start_timerEx( simpleBLEPeripheral_TaskID, SBP_PERIODIC_EVT, SBP_PERIODIC_EVT_PERIOD );
-    
-    // Get zm516x info
-    osal_set_event( simpleBLEPeripheral_TaskID, SBP_READ_ZM516X_INFO_EVT );
 
     return ( events ^ SBP_START_DEVICE_EVT );
   }
@@ -737,14 +538,11 @@ static void simpleBLEPeripheral_HandleKeys( uint8 shift, uint8 keys )
   if ( keys & HAL_KEY_SW_1 )
   {
     SK_Keys |= SK_KEY_LEFT;
-    HalGpioSet(HAL_GPIO_ZM516X_MOTOR1,0);
-    HalGpioSet(HAL_GPIO_ZM516X_MOTOR2,0);
   }
 
   if ( keys & HAL_KEY_SW_2 )
   {
-    HalGpioSet(HAL_GPIO_ZM516X_MOTOR1,0);
-    HalGpioSet(HAL_GPIO_ZM516X_MOTOR2,0);
+
     SK_Keys |= SK_KEY_RIGHT;
 
     // if device is not in a connection, pressing the right key should toggle

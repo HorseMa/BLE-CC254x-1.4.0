@@ -51,6 +51,7 @@
 #include "hal_key.h"
 #include "npi.h"
 #include "simpleBLEPeripheral.h"
+#include "zigbee.h"
 
 /*********************************************************************
  * MACROS
@@ -108,7 +109,7 @@ static uint8 registeredKeysTaskID = NO_TASK_ID;
  * @param   level: COLD,WARM,READY
  * @return  None
  */
-extern uint8 simpleBLEPeripheral_TaskID;   // Task ID for internal task/event processing
+extern uint8 zigbee_TaskID;   // Task ID for internal task/event processing
 void npiCBack_uart( uint8 port, uint8 event )
 {
   /*uint16 usRxBufLen = Hal_UART_RxBufLen(HAL_UART_PORT_0); // 读取接收据量
@@ -130,23 +131,23 @@ void npiCBack_uart( uint8 port, uint8 event )
   {
     if(event & HAL_UART_RX_FULL)
     {
-      osal_set_event( simpleBLEPeripheral_TaskID, UART_RECEIVE_EVT );
+      osal_set_event( zigbee_TaskID, UART_RECEIVE_EVT );
     }
     if(event & HAL_UART_RX_ABOUT_FULL)
     {
-      osal_set_event( simpleBLEPeripheral_TaskID, UART_RECEIVE_EVT );
+      osal_set_event( zigbee_TaskID, UART_RECEIVE_EVT );
     }
     if(event & HAL_UART_RX_TIMEOUT)
     {
-      osal_set_event( simpleBLEPeripheral_TaskID, UART_RECEIVE_EVT );
+      osal_set_event( zigbee_TaskID, UART_RECEIVE_EVT );
     }
     if(event & HAL_UART_TX_FULL)
     {
-      //osal_set_event( simpleBLEPeripheral_TaskID, UART_RECEIVE_EVT );
+      //osal_set_event( zigbee_TaskID, UART_RECEIVE_EVT );
     }
     if(event & HAL_UART_TX_EMPTY)
     {
-      //osal_set_event( simpleBLEPeripheral_TaskID, UART_RECEIVE_EVT );
+      //osal_set_event( zigbee_TaskID, UART_RECEIVE_EVT );
     }
   }
   return;
