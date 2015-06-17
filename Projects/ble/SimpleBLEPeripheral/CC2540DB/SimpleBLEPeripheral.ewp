@@ -472,6 +472,8 @@
           <state>$PROJ_DIR$\..\..\Profiles\Keys</state>
           <state>$PROJ_DIR$\..\..\Profiles\DevInfo</state>
           <state>$PROJ_DIR$\..\Source</state>
+          <state>$PROJ_DIR$\..\Source\xbee_ansic_library\include</state>
+          <state>$PROJ_DIR$\..\Source\xbee_ansic_library\include\xbee</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -8580,6 +8582,81 @@
   </configuration>
   <group>
     <name>APP</name>
+    <group>
+      <name>XBEE</name>
+      <file>
+        <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_atcmd.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_atmode.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_cbuf.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_commissioning.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_device.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_discovery.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_ebl_file.c</name>
+        <excluded>
+          <configuration>CC2540DK-MINI Keyfob</configuration>
+        </excluded>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_firmware.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_io.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_ota_client.c</name>
+        <excluded>
+          <configuration>CC2540DK-MINI Keyfob</configuration>
+        </excluded>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_ota_server.c</name>
+        <excluded>
+          <configuration>CC2540DK-MINI Keyfob</configuration>
+        </excluded>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_reg_descr.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_route.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_sxa.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_time.c</name>
+        <excluded>
+          <configuration>CC2540DK-MINI Keyfob</configuration>
+        </excluded>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_transparent_serial.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_wpan.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_xmodem.c</name>
+      </file>
+    </group>
+    <group>
+      <name>ZM516X</name>
+      <file>
+        <name>$PROJ_DIR$\..\Source\zlgAtCmd.c</name>
+      </file>
+    </group>
     <file>
       <name>$PROJ_DIR$\..\Source\OSAL_SimpleBLEPeripheral.c</name>
     </file>
@@ -8594,9 +8671,6 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\Source\zigbee.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Source\zlgAtCmd.c</name>
     </file>
   </group>
   <group>

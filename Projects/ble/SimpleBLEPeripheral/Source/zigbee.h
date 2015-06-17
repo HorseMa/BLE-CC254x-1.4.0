@@ -14,14 +14,21 @@ extern "C"
  * CONSTANTS
  */
 
-
+#if defined _USE_ZM516X__
 // Simple BLE Peripheral Task Events
 #define ZIGBEE_START_DEVICE_EVT                              0x0001
 #define ZIGBEE_PERIODIC_EVT                                  0x0002
 #define ZIGBEE_READ_ZM516X_INFO_EVT                          0x0004
 #define UART_RECEIVE_EVT                                     0x0008
 #define BOARD_TEST_EVT                                       0x0010
-
+#endif
+#if defined _USE_XBEE__
+#define ZIGBEE_START_DEVICE_EVT                              0x0001
+#define ZIGBEE_PERIODIC_EVT                                  0x0002
+#define XBEE_INIT_EVT                          0x0004
+#define UART_RECEIVE_EVT                                     0x0008
+#define BOARD_TEST_EVT                                       0x0010
+#endif
 /*********************************************************************
  * MACROS
  */

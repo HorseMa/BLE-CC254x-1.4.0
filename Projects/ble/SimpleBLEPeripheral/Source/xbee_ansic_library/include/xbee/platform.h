@@ -318,6 +318,8 @@
 	#include "xbee/platform_win32.h"
 #elif defined __MWERKS__ && defined __HC08__
 	#include "xbee/platform_hcs08.h"
+#elif defined CC2540_MINIDK
+        #include "xbee/platform_cc254x.h"
 #else
 	#error "Unknown target"
 #endif

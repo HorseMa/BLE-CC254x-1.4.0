@@ -44,7 +44,8 @@
 #include "hal_mcu.h"
 #include "hal_sleep.h"
 #include "osal.h"
-
+//#define _USE_ZM516X__
+#define _USE_XBEE__
 /*********************************************************************
  */
 // Internal (MCU) RAM addresses

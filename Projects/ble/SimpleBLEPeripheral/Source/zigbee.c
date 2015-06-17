@@ -146,7 +146,7 @@ uint16 Zigbee_ProcessEvent( uint8 task_id, uint16 events )
     // return unprocessed events
     return (events ^ SYS_EVENT_MSG);
   }
-  
+#if defined _USE_ZM516X__
   if(events & ZIGBEE_READ_ZM516X_INFO_EVT)
   {
     static unsigned char state = 0;
@@ -265,12 +265,20 @@ readloacalcfg:
 
     return ( events ^ ZIGBEE_READ_ZM516X_INFO_EVT );
   }
+#endif 
+#if defined _USE_XBEE__
+  if(events & XBEE_INIT_EVT)
+  {
+    
+    return ( events ^ XBEE_INIT_EVT );
+  }
+#endif
   if(events & BOARD_TEST_EVT)
   {
-    const unsigned char setiodir[] = {0xDE, 0xDF, 0xEF, 0xD4, 0x20, 0x01, 0x7C};
-    const unsigned char setio[] = {0xDE, 0xDF, 0xEF, 0xD6, 0x20, 0x01, 0x7C};
-    const unsigned char readadc[] = {0xDE, 0xDF, 0xEF, 0xD7, 0x20, 0x01, 0x01};
-    static unsigned char wbuf[255];
+    //const unsigned char setiodir[] = {0xDE, 0xDF, 0xEF, 0xD4, 0x20, 0x01, 0x7C};
+    //const unsigned char setio[] = {0xDE, 0xDF, 0xEF, 0xD6, 0x20, 0x01, 0x7C};
+    //const unsigned char readadc[] = {0xDE, 0xDF, 0xEF, 0xD7, 0x20, 0x01, 0x01};
+    //static unsigned char wbuf[255];
     static unsigned char state = 0;
 
     switch(state)
@@ -319,7 +327,7 @@ readloacalcfg:
     
     return ( events ^ BOARD_TEST_EVT );
   }
-#if 1
+
   if(events & UART_RECEIVE_EVT)
   {
     static unsigned char lenold = 0;
@@ -329,7 +337,12 @@ readloacalcfg:
     {
       if(lenold == len)
       {
+#if defined _USE_ZM516X__
         osal_set_event( task_id, ZIGBEE_READ_ZM516X_INFO_EVT );
+#endif
+#if defined _USE_XBEE__
+        osal_set_event( task_id, XBEE_INIT_EVT );
+#endif
         lenold = 0;
       }
       else
@@ -352,12 +365,17 @@ readloacalcfg:
     
     
   }
-#endif
+
   if ( events & ZIGBEE_START_DEVICE_EVT )
   {
+#if defined _USE_ZM516X__
     // Get zm516x info
-    osal_set_event( zigbee_TaskID, BOARD_TEST_EVT );
-
+    osal_set_event( zigbee_TaskID, ZIGBEE_READ_ZM516X_INFO_EVT );
+#endif
+    
+#if defined _USE_XBEE__
+    osal_set_event( zigbee_TaskID, XBEE_INIT_EVT );
+#endif
     return ( events ^ ZIGBEE_START_DEVICE_EVT );
   }
 
