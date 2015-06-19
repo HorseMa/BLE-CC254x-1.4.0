@@ -115,6 +115,7 @@ extern "C"
 #define GPIO_ZM516X_MOTOR2_BV    BV(7)
 #define GPIO_ZM516X_KEY1_BV    BV(0)
 #define GPIO_ZM516X_KEY2_BV    BV(1)
+#define GPIO_ZM516X_ACK_BV      BV(0)
    
 #define GPIO_ZM516X_RESET_SBIT    P1_3
 #define GPIO_ZM516X_DEF_SBIT    P0_6
@@ -124,7 +125,8 @@ extern "C"
 #define GPIO_ZM516X_MOTOR2_SBIT    P1_7
 #define GPIO_ZM516X_KEY1_SBIT    P1_0
 #define GPIO_ZM516X_KEY2_SBIT    P1_1
-
+#define GPIO_ZM516X_ACK_SBIT    P2_0
+  
 #define GPIO_ZM516X_RESET_DDR                       P1DIR
 #define GPIO_ZM516X_DEF_DDR                       P0DIR
 #define GPIO_ZM516X_WAKEUP_DDR                       P1DIR
@@ -133,6 +135,7 @@ extern "C"
 #define GPIO_ZM516X_MOTOR2_DDR                       P1DIR
 #define GPIO_ZM516X_KEY1_DDR                       P1DIR
 #define GPIO_ZM516X_KEY2_DDR                       P1DIR
+#define GPIO_ZM516X_ACK_DDR                        P2DIR
 
 #define GPIO_ZM516X_RESET_TURN_HIGH()    GPIO_ZM516X_RESET_SBIT = 1;
 #define GPIO_ZM516X_DEF_TURN_HIGH()    GPIO_ZM516X_DEF_SBIT = 1;
@@ -140,6 +143,7 @@ extern "C"
 #define GPIO_ZM516X_SLEEP_TURN_HIGH()    GPIO_ZM516X_SLEEP_SBIT = 1;
 #define GPIO_ZM516X_MOTOR1_TURN_HIGH()    GPIO_ZM516X_MOTOR1_SBIT = 1;
 #define GPIO_ZM516X_MOTOR2_TURN_HIGH()    GPIO_ZM516X_MOTOR2_SBIT = 1;
+#define GPIO_ZM516X_ACK_TURN_HIGH()    GPIO_ZM516X_ACK_SBIT = 1;
   
 #define GPIO_ZM516X_RESET_TURN_LOW()    GPIO_ZM516X_RESET_SBIT = 0;
 #define GPIO_ZM516X_DEF_TURN_LOW()    GPIO_ZM516X_DEF_SBIT = 0;
@@ -147,6 +151,7 @@ extern "C"
 #define GPIO_ZM516X_SLEEP_TURN_LOW()    GPIO_ZM516X_SLEEP_SBIT = 0;
 #define GPIO_ZM516X_MOTOR1_TURN_LOW()    GPIO_ZM516X_MOTOR1_SBIT = 0;
 #define GPIO_ZM516X_MOTOR2_TURN_LOW()    GPIO_ZM516X_MOTOR2_SBIT = 0;
+#define GPIO_ZM516X_ACK_TURN_LOW()    GPIO_ZM516X_ACK_SBIT = 0;
                              
 #ifdef HAL_BOARD_CC2530EB_REV17
   /* 2 - Red */

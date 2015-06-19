@@ -30,6 +30,7 @@
 #include "gapbondmgr.h"
 
 #include "zigbee.h"
+#include "xbee_at_cmd.h"
 
 #if defined FEATURE_OAD
   #include "oad.h"
@@ -269,7 +270,38 @@ readloacalcfg:
 #if defined _USE_XBEE__
   if(events & XBEE_INIT_EVT)
   {
+    static uint8 state = 0;
+    uint8 len;
+    static uint8 rbuf[128];
+    switch(state)
+    {
+      case 0:
+      HalGpioSet(HAL_GPIO_XBEE_RESET,0);
+      osal_start_timerEx( task_id, XBEE_INIT_EVT, 100 );
+      state = 1;
+      break;
+      case 1:
+      HalGpioSet(HAL_GPIO_XBEE_RESET,1);
+      osal_start_timerEx( task_id, XBEE_INIT_EVT, 100 );
+      state = 2;
+      break;
+      case 2:
+      xbee_enter_at_mode();
+      state = 3;
+      break;
+      case 3:
+      len = NPI_RxBufLen();
+      NPI_ReadTransport(rbuf,len);
+      state = 4;
+      break;
+      case 4:
+      osal_set_event( zigbee_TaskID, BOARD_TEST_EVT );
+      break;
+      default:
+      break;
+    }
     
+
     return ( events ^ XBEE_INIT_EVT );
   }
 #endif
@@ -349,7 +381,12 @@ readloacalcfg:
       {
         lenold = len;
         osal_stop_timerEx( task_id, UART_RECEIVE_EVT );
+#if defined _USE_ZM516X__
         osal_start_timerEx( task_id, UART_RECEIVE_EVT, 3 );
+#endif
+#if defined _USE_XBEE__
+        osal_start_timerEx( task_id, UART_RECEIVE_EVT, 7 );
+#endif
       }
       return ( events ^ UART_RECEIVE_EVT );
     }

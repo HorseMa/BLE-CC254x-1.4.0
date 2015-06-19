@@ -68,7 +68,11 @@ extern "C"
 #define HAL_GPIO_ZM516X_ALL   (HAL_GPIO_ZM516X_RESET | HAL_GPIO_ZM516X_DEF | HAL_GPIO_ZM516X_SLEEP | HAL_GPIO_ZM516X_WAKEUP | HAL_GPIO_ZM516X_MOTOR1 | HAL_GPIO_ZM516X_MOTOR1)
 #define HAL_GPIO_ZM516X_KEY1     0x80
 #define HAL_GPIO_ZM516X_KEY2     0x40 
+#define HAL_GPIO_ZM516X_ACK     0x00
 
+#define HAL_GPIO_XBEE_RESET     HAL_GPIO_ZM516X_DEF      
+#define HAL_GPIO_XBEE_RTS       HAL_GPIO_ZM516X_ACK
+#define HAL_GPIO_XBEE_CTS       HAL_GPIO_ZM516X_WAKEUP
 /* Defaults */
 #define HAL_LED_DEFAULT_MAX_LEDS      4
 #define HAL_LED_DEFAULT_DUTY_CYCLE    5
@@ -94,7 +98,7 @@ extern void HalGpioInit( void );
  */
 extern uint8 HalGpioSet( uint8 led, uint8 mode );
 
-
+extern uint8 HalGpioGet(uint8);
 /*********************************************************************
 *********************************************************************/
 

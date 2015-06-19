@@ -55,6 +55,7 @@ extern "C"
 #include "hal_types.h"
 #include "hal_board.h"
 #include "hal_uart.h"
+#include "OnBoard.h"
 
 /*******************************************************************************
  * MACROS
@@ -95,7 +96,11 @@ extern "C"
 #define NPI_UART_INT_ENABLE            TRUE
 
 #if !defined( NPI_UART_BR )
+#if defined _USE_ZM516X__
 #define NPI_UART_BR                    HAL_UART_BR_115200
+#else
+#define NPI_UART_BR                    HAL_UART_BR_9600
+#endif
 #endif // !NPI_UART_BR
 
 /*******************************************************************************

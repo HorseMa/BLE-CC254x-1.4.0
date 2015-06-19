@@ -8584,6 +8584,18 @@
     <name>APP</name>
     <group>
       <name>XBEE</name>
+      <group>
+        <name>hal</name>
+        <file>
+          <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\cc2541\xbee_platform_cc2541.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\cc2541\xbee_serial_cc2541.c</name>
+        </file>
+      </group>
+      <file>
+        <name>$PROJ_DIR$\..\Source\xbee_at_cmd.c</name>
+      </file>
       <file>
         <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_atcmd.c</name>
       </file>
