@@ -277,15 +277,18 @@ readloacalcfg:
     {
       case 0:
       HalGpioSet(HAL_GPIO_XBEE_RESET,0);
+      HalGpioSet(HAL_GPIO_XBEE_RTS,1);
       osal_start_timerEx( task_id, XBEE_INIT_EVT, 100 );
       state = 1;
       break;
       case 1:
       HalGpioSet(HAL_GPIO_XBEE_RESET,1);
-      osal_start_timerEx( task_id, XBEE_INIT_EVT, 100 );
+      osal_start_timerEx( task_id, XBEE_INIT_EVT, 2000 );
       state = 2;
       break;
       case 2:
+      len = NPI_RxBufLen();
+      NPI_ReadTransport(rbuf,len);
       xbee_enter_at_mode();
       state = 3;
       break;
