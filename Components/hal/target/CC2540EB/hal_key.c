@@ -127,7 +127,8 @@
 #define HAL_KEY_SW_2_IENBIT   BV(4) /* Mask bit for all of Port_0 */
 #define HAL_KEY_SW_2_PXIFG    P1IFG /* Interrupt flag at source */
 
-#define HAL_KEY_SW_1_EDGEBIT  BV(0)
+#define HAL_KEY_SW_1_EDGEBIT  BV(1)
+#define HAL_KEY_SW_2_EDGEBIT  BV(1)
 
 #else
 
@@ -230,7 +231,7 @@ void HalKeyInit( void )
 
 #if defined ( CC2540_MINIDK )
   /* Rising/Falling edge configuratinn */
-  PICTL |= HAL_KEY_SW_1_EDGEBIT;   /* Set the edge bit to set falling edge to give int */
+  PICTL |= (HAL_KEY_SW_1_EDGEBIT | HAL_KEY_SW_2_EDGEBIT);   /* Set the edge bit to set falling edge to give int */
   HAL_KEY_SW_1_IEN |= ( HAL_KEY_SW_1_IENBIT | HAL_KEY_SW_2_IENBIT );   /* enable CPU interrupt */
 #endif
 }
