@@ -8594,6 +8594,9 @@
         </file>
       </group>
       <file>
+        <name>$PROJ_DIR$\..\Source\xbee_api_opt.c</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\Source\xbee_at_cmd.c</name>
       </file>
       <file>

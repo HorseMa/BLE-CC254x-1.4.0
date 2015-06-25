@@ -31,6 +31,7 @@
 
 #include "zigbee.h"
 #include "xbee_at_cmd.h"
+#include "xbee_api_opt.h"
 
 #if defined FEATURE_OAD
   #include "oad.h"
@@ -283,13 +284,21 @@ readloacalcfg:
       break;
       case 1:
       HalGpioSet(HAL_GPIO_XBEE_RESET,1);
-      osal_start_timerEx( task_id, XBEE_INIT_EVT, 2000 );
+      //osal_start_timerEx( task_id, XBEE_INIT_EVT, 2000 );
       state = 2;
       break;
       case 2:
       len = NPI_RxBufLen();
       NPI_ReadTransport(rbuf,len);
-      xbee_enter_at_mode();
+      osal_memcpy(rbuf,&stDevInfo,65);
+      xbee_api_atcmd_set_led(XBEE_LED1,LED_OFF);
+      xbee_api_atcmd_set_led(XBEE_LED2,LED_ON);
+      xbee_api_atcmd_set_led(XBEE_LED3,LED_ON);
+      xbee_api_atcmd_set_led(XBEE_LED4,LED_ON);
+      xbee_api_atcmd_speaker_opt(SPEAKER_ON);
+      HalGpioSet(HAL_GPIO_ZM516X_MOTOR_EN,0);
+      
+      //xbee_api_transmit_data_request("hello",6);
       state = 3;
       break;
       case 3:
@@ -299,6 +308,9 @@ readloacalcfg:
       break;
       case 4:
       osal_set_event( zigbee_TaskID, BOARD_TEST_EVT );
+      state = 5;
+      break;
+      case 5:
       break;
       default:
       break;
@@ -323,6 +335,12 @@ readloacalcfg:
       osal_memcpy(&wbuf[4],stDevInfo.devLoacalNetAddr,2);
       NPI_WriteTransport(wbuf, 7);*/
       osal_start_timerEx( zigbee_TaskID, BOARD_TEST_EVT, 200 );
+#if defined _USE_XBEE__
+      HalGpioSet(HAL_GPIO_XBEE_RTS,1);
+      HalGpioSet(HAL_GPIO_XBEE_RESET,1);
+#endif
+      HalGpioSet(HAL_GPIO_ZM516X_MOTOR_EN,0);
+      HalGpioSet(HAL_GPIO_ZM516X_DIR,1);
       state = 1;
       break;
       case 1:
@@ -331,6 +349,13 @@ readloacalcfg:
       NPI_WriteTransport(wbuf, 7);*/
       HalGpioSet(HAL_GPIO_ZM516X_MOTOR1,1);
       HalGpioSet(HAL_GPIO_ZM516X_MOTOR2,0);
+#if defined _USE_XBEE__
+      xbee_api_atcmd_set_led(XBEE_LED1,LED_ON);
+      xbee_api_atcmd_set_led(XBEE_LED2,LED_OFF);
+      xbee_api_atcmd_set_led(XBEE_LED3,LED_OFF);
+      xbee_api_atcmd_set_led(XBEE_LED4,LED_OFF);
+      xbee_api_atcmd_speaker_opt(SPEAKER_OFF);
+#endif
       state = 2;
       osal_start_timerEx( zigbee_TaskID, BOARD_TEST_EVT, 1000 );
       break;
@@ -353,6 +378,13 @@ readloacalcfg:
       case 4:
       HalGpioSet(HAL_GPIO_ZM516X_MOTOR1,1);
       HalGpioSet(HAL_GPIO_ZM516X_MOTOR2,1);
+#if defined _USE_XBEE__
+      xbee_api_atcmd_set_led(XBEE_LED1,LED_OFF);
+      xbee_api_atcmd_set_led(XBEE_LED2,LED_ON);
+      xbee_api_atcmd_set_led(XBEE_LED3,LED_ON);
+      xbee_api_atcmd_set_led(XBEE_LED4,LED_ON);
+      xbee_api_atcmd_speaker_opt(SPEAKER_ON);
+#endif
       state = 1;
       osal_start_timerEx( zigbee_TaskID, BOARD_TEST_EVT, 1000 );
       break;
