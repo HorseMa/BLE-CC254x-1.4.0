@@ -39,6 +39,9 @@
 #endif
 #include "npi.h"
 #include "hal_gpio.h"
+#include "hal_i2c.h"
+#include "hal_sensor.h"
+#include <math.h>
 /*********************************************************************
  * MACROS
  */
@@ -322,18 +325,46 @@ readloacalcfg:
 #endif
   if(events & BOARD_TEST_EVT)
   {
-    //const unsigned char setiodir[] = {0xDE, 0xDF, 0xEF, 0xD4, 0x20, 0x01, 0x7C};
-    //const unsigned char setio[] = {0xDE, 0xDF, 0xEF, 0xD6, 0x20, 0x01, 0x7C};
-    //const unsigned char readadc[] = {0xDE, 0xDF, 0xEF, 0xD7, 0x20, 0x01, 0x01};
-    //static unsigned char wbuf[255];
+#if defined _USE_ZM516X__
+    const unsigned char setiodir[] = {0xDE, 0xDF, 0xEF, 0xD4, 0x20, 0x01, 0x7C};
+    const unsigned char setio[] = {0xDE, 0xDF, 0xEF, 0xD6, 0x20, 0x01, 0x7C};
+    const unsigned char readadc[] = {0xDE, 0xDF, 0xEF, 0xD7, 0x20, 0x01, 0x01};
+    static unsigned char wbuf[255];
+#endif
     static unsigned char state = 0;
 
     switch(state)
     {
       case 0:
-      /*osal_memcpy(wbuf,setiodir,7);
-      osal_memcpy(&wbuf[4],stDevInfo.devLoacalNetAddr,2);
-      NPI_WriteTransport(wbuf, 7);*/
+        
+        HalSensorReadReg(0x0a,wbuf,3);
+        wbuf[0] = 0x00;
+        //wbuf[1] = 0x00;
+        HalSensorWriteReg(0x02, wbuf, 1);
+        HalSensorWriteReg(0x01, wbuf, 1);
+        HalSensorReadReg(0x03,wbuf,6);
+        int16 x,y,z,angle;
+        x=wbuf[0] << 8 | wbuf[1];
+        y=wbuf[2] << 8 | wbuf[3];
+        z=wbuf[4] << 8 | wbuf[5];
+        angle= atan2((double)y,(double)x) * (180 / 3.14159265) + 180; // angle in degrees
+        angle*=10;
+        angle*=10;
+        /*wan=temp_data/10000+0x30 ;
+        temp_data=temp_data%10000;   //取余运算
+	qian=temp_data/1000+0x30 ;
+        temp_data=temp_data%1000;    //取余运算
+        bai=temp_data/100+0x30   ;
+        temp_data=temp_data%100;     //取余运算
+        shi=temp_data/10+0x30    ;
+        temp_data=temp_data%10;      //取余运算
+        ge=temp_data+0x30; 	*/
+        
+#if defined _USE_ZM516X__
+      osal_memcpy(wbuf,setiodir,7);
+      //osal_memcpy(&wbuf[4],stDevInfo.devLoacalNetAddr,2);
+      NPI_WriteTransport(wbuf, 7);
+#endif
       osal_start_timerEx( zigbee_TaskID, BOARD_TEST_EVT, 200 );
 #if defined _USE_XBEE__
       HalGpioSet(HAL_GPIO_XBEE_RTS,1);
@@ -344,9 +375,11 @@ readloacalcfg:
       state = 1;
       break;
       case 1:
-      /*osal_memcpy(wbuf,setio,7);
-      osal_memcpy(&wbuf[4],stDevInfo.devLoacalNetAddr,2);
-      NPI_WriteTransport(wbuf, 7);*/
+#if defined _USE_ZM516X__
+      osal_memcpy(wbuf,setio,7);
+      //osal_memcpy(&wbuf[4],stDevInfo.devLoacalNetAddr,2);
+      NPI_WriteTransport(wbuf, 7);
+#endif
       HalGpioSet(HAL_GPIO_ZM516X_MOTOR1,1);
       HalGpioSet(HAL_GPIO_ZM516X_MOTOR2,0);
 #if defined _USE_XBEE__
@@ -360,10 +393,6 @@ readloacalcfg:
       osal_start_timerEx( zigbee_TaskID, BOARD_TEST_EVT, 1000 );
       break;
       case 2:
-      /*osal_memcpy(wbuf,setio,7);
-      wbuf[6] = ~0x7C;
-      osal_memcpy(&wbuf[4],stDevInfo.devLoacalNetAddr,2);
-      NPI_WriteTransport(wbuf, 7);*/
       HalGpioSet(HAL_GPIO_ZM516X_MOTOR1,1);
       HalGpioSet(HAL_GPIO_ZM516X_MOTOR2,1);
       state = 3;
@@ -378,6 +407,12 @@ readloacalcfg:
       case 4:
       HalGpioSet(HAL_GPIO_ZM516X_MOTOR1,1);
       HalGpioSet(HAL_GPIO_ZM516X_MOTOR2,1);
+#if defined _USE_ZM516X__
+      osal_memcpy(wbuf,setio,7);
+      wbuf[6] = ~0x7C;
+      //osal_memcpy(&wbuf[4],stDevInfo.devLoacalNetAddr,2);
+      NPI_WriteTransport(wbuf, 7);
+#endif
 #if defined _USE_XBEE__
       xbee_api_atcmd_set_led(XBEE_LED1,LED_OFF);
       xbee_api_atcmd_set_led(XBEE_LED2,LED_ON);

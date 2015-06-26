@@ -50,6 +50,14 @@
  *                                          Constants
  * ------------------------------------------------------------------------------------------------
  */
+/* I2C */
+#define I2CCFG          XREG( 0x6230 )
+#define I2CSTAT         XREG( 0x6231 )
+#define I2CDATA         XREG( 0x6232 )
+#define I2CADDR         XREG( 0x6233 )
+#define I2CWC           XREG( 0x6234 )
+#define I2CIO           XREG( 0x6235 )
+
 #define I2C_ENS1            BV(6)
 #define I2C_STA             BV(5)
 #define I2C_STO             BV(4)

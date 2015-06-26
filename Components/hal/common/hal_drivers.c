@@ -73,7 +73,7 @@
 #if (defined HAL_SPI) && (HAL_SPI == TRUE)
 #include "hal_spi.h"
 #endif
-
+#include "hal_i2c.h"
 /**************************************************************************************************
  *                                      GLOBAL VARIABLES
  **************************************************************************************************/
@@ -155,6 +155,7 @@ void HalDriverInit (void)
 #if (defined HAL_SPI) && (HAL_SPI == TRUE)
   HalSpiInit();
 #endif
+  HalI2CInit(HAL_I2C_SLAVE_ADDR_DEF,i2cClock_123KHZ);
 
   /* HID */
 #if (defined HAL_HID) && (HAL_HID == TRUE)

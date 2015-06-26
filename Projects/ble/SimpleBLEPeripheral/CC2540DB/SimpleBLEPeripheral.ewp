@@ -276,6 +276,7 @@
           <state>CC2540_MINIDK</state>
           <state>HAL_KEY=TRUE</state>
           <state>HAL_UART=TRUE</state>
+          <state>HAL_I2C=TRUE</state>
           <state>ZAPP_P1</state>
           <state>xMAKE_CRC_SHDW</state>
           <state>xFEATURE_SBL</state>
@@ -457,6 +458,7 @@
           <state>$PROJ_DIR$\..\..\common</state>
           <state>$PROJ_DIR$\..\..\include</state>
           <state>$PROJ_DIR$\..\..\..\..\Components\hal\include</state>
+          <state>$PROJ_DIR$\..\..\..\..\Components\hal\target\CC2541ST</state>
           <state>$PROJ_DIR$\..\..\..\..\Components\hal\target\CC2540EB</state>
           <state>$PROJ_DIR$\..\..\..\..\Components\osal\include</state>
           <state>$PROJ_DIR$\..\..\..\..\Components\services\saddr</state>
@@ -8601,21 +8603,39 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_atcmd.c</name>
+        <excluded>
+          <configuration>CC2540DK-MINI Keyfob</configuration>
+        </excluded>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_atmode.c</name>
+        <excluded>
+          <configuration>CC2540DK-MINI Keyfob</configuration>
+        </excluded>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_cbuf.c</name>
+        <excluded>
+          <configuration>CC2540DK-MINI Keyfob</configuration>
+        </excluded>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_commissioning.c</name>
+        <excluded>
+          <configuration>CC2540DK-MINI Keyfob</configuration>
+        </excluded>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_device.c</name>
+        <excluded>
+          <configuration>CC2540DK-MINI Keyfob</configuration>
+        </excluded>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_discovery.c</name>
+        <excluded>
+          <configuration>CC2540DK-MINI Keyfob</configuration>
+        </excluded>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_ebl_file.c</name>
@@ -8625,9 +8645,15 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_firmware.c</name>
+        <excluded>
+          <configuration>CC2540DK-MINI Keyfob</configuration>
+        </excluded>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_io.c</name>
+        <excluded>
+          <configuration>CC2540DK-MINI Keyfob</configuration>
+        </excluded>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_ota_client.c</name>
@@ -8643,12 +8669,21 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_reg_descr.c</name>
+        <excluded>
+          <configuration>CC2540DK-MINI Keyfob</configuration>
+        </excluded>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_route.c</name>
+        <excluded>
+          <configuration>CC2540DK-MINI Keyfob</configuration>
+        </excluded>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_sxa.c</name>
+        <excluded>
+          <configuration>CC2540DK-MINI Keyfob</configuration>
+        </excluded>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_time.c</name>
@@ -8658,12 +8693,21 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_transparent_serial.c</name>
+        <excluded>
+          <configuration>CC2540DK-MINI Keyfob</configuration>
+        </excluded>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_wpan.c</name>
+        <excluded>
+          <configuration>CC2540DK-MINI Keyfob</configuration>
+        </excluded>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Source\xbee_ansic_library\src\xbee\xbee_xmodem.c</name>
+        <excluded>
+          <configuration>CC2540DK-MINI Keyfob</configuration>
+        </excluded>
       </file>
     </group>
     <group>
@@ -8775,6 +8819,9 @@
             <name>$PROJ_DIR$\..\..\..\..\Components\hal\target\CC2540EB\hal_gpio.c</name>
           </file>
           <file>
+            <name>$PROJ_DIR$\..\..\..\..\Components\hal\target\CC2541ST\hal_i2c.c</name>
+          </file>
+          <file>
             <name>$PROJ_DIR$\..\..\..\..\Components\hal\target\CC2540EB\hal_key.c</name>
           </file>
           <file>
@@ -8782,6 +8829,9 @@
           </file>
           <file>
             <name>$PROJ_DIR$\..\..\..\..\Components\hal\target\CC2540EB\hal_led.c</name>
+          </file>
+          <file>
+            <name>$PROJ_DIR$\..\..\..\..\Components\hal\target\CC2541ST\hal_sensor.c</name>
           </file>
           <file>
             <name>$PROJ_DIR$\..\..\..\..\Components\hal\target\CC2540EB\hal_sleep.c</name>
@@ -8794,6 +8844,9 @@
           </file>
           <file>
             <name>$PROJ_DIR$\..\..\..\..\Components\hal\target\CC2540EB\hal_uart.c</name>
+          </file>
+          <file>
+            <name>$PROJ_DIR$\..\Source\hmc5983.c</name>
           </file>
         </group>
         <group>
