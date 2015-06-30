@@ -155,8 +155,9 @@ void HalDriverInit (void)
 #if (defined HAL_SPI) && (HAL_SPI == TRUE)
   HalSpiInit();
 #endif
+#if defined _HMC5983_ON_BOARD__
   HalI2CInit(HAL_I2C_SLAVE_ADDR_DEF,i2cClock_123KHZ);
-
+#endif
   /* HID */
 #if (defined HAL_HID) && (HAL_HID == TRUE)
   usbHidInit();

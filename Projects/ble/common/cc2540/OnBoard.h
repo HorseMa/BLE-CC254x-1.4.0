@@ -46,6 +46,7 @@
 #include "osal.h"
 #define _USE_ZM516X__
 //#define _USE_XBEE__
+//#define _HMC5983_ON_BOARD__
 /*********************************************************************
  */
 // Internal (MCU) RAM addresses

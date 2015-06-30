@@ -159,17 +159,16 @@ uint16 Zigbee_ProcessEvent( uint8 task_id, uint16 events )
     unsigned int i;
     unsigned char sum;
     static unsigned char wbuf[255],rbuf[255];
-    static unsigned char cnt = 0;
-    HalGpioSet(HAL_GPIO_ZM516X_ALL,1);
+    //static unsigned char cnt = 0;
     
 
     switch(state)
     {
       case 0:
         HalGpioSet(HAL_GPIO_ZM516X_ALL,1);
-        HalGpioSet(HAL_GPIO_ZM516X_DEF,0);
+        //HalGpioSet(HAL_GPIO_ZM516X_DEF,0);
         HalGpioSet(HAL_GPIO_ZM516X_RESET,0);
-        //HalGpioSet(HAL_GPIO_ZM516X_SLEEP,1);
+        //HalGpioSet(HAL_GPIO_ZM516X_SLEEP,0);
         osal_start_timerEx( task_id, ZIGBEE_READ_ZM516X_INFO_EVT, 100 );
         state = 1;
         break;
@@ -179,9 +178,13 @@ uint16 Zigbee_ProcessEvent( uint8 task_id, uint16 events )
         state = 2;
         break;
       case 2:
-readloacalcfg:
         HalGpioSet(HAL_GPIO_ZM516X_DEF,1);
-        //HalGpioSet(HAL_GPIO_ZM516X_SLEEP,0);
+        osal_start_timerEx( task_id, ZIGBEE_READ_ZM516X_INFO_EVT, 100 );
+        state = 3;
+        break;
+      case 3:
+readloacalcfg:
+        
         NPI_ReadTransport(rbuf,NPI_RxBufLen());  // clear uart buffer
         wbuf[0] = 0xab;
         wbuf[1] = 0xbc;
@@ -189,11 +192,11 @@ readloacalcfg:
         wbuf[3] = enReadLoacalCfg;
         wbuf[4] = wbuf[0] + wbuf[1] + wbuf[2] + wbuf[3];
         NPI_WriteTransport(wbuf, 5);
-        state = 3;
+        state = 4;
         break;
-      case 3:
+      case 4:
         len = NPI_RxBufLen();
-        cnt ++;
+        //cnt ++;
         if(len >= 74)
         {
           osal_memset(rbuf,0,128);
@@ -211,10 +214,13 @@ readloacalcfg:
             rbuf[4] = stDevInfo.devLoacalNetAddr[0];
             rbuf[5] = stDevInfo.devLoacalNetAddr[1];
             stDevInfo.devLoacalNetAddr[0] = 0x00;
-            stDevInfo.devLoacalNetAddr[1] = 0x01;
-            stDevInfo.devChannel = 0x19;
-            stDevInfo.devPanid[0] = 0x10;
-            stDevInfo.devPanid[1] = 0x01;
+            stDevInfo.devLoacalNetAddr[1] = 0x02;
+            stDevInfo.devDestNetAddr[0] = 0x00;
+            stDevInfo.devDestNetAddr[1] = 0x01;
+            stDevInfo.devChannel = 26;
+            stDevInfo.devMode = 0x00;
+            /*stDevInfo.devPanid[0] = 0x10;
+            stDevInfo.devPanid[1] = 0x01;*/
             osal_memcpy(&rbuf[6],&stDevInfo,65);
             sum = 0;
             for(i = 0;i < (6 + 65);i++)
@@ -223,15 +229,19 @@ readloacalcfg:
             }
             rbuf[6 + 65] = sum;
             NPI_WriteTransport(rbuf, 6 + 65 + 1);
-            state = 4;
+            state = 5;
           }
           else
           {
             goto readloacalcfg;
           }
         }
+        else
+        {
+          goto readloacalcfg;
+        }
         break;
-      case 4:
+      case 5:
         len = NPI_RxBufLen();
         
         if(len == 7)
@@ -241,17 +251,23 @@ readloacalcfg:
           //break;
           HalGpioSet(HAL_GPIO_ZM516X_RESET,0);
           osal_start_timerEx( task_id, ZIGBEE_READ_ZM516X_INFO_EVT, 100 );
-          state = 5;
+          state = 6;
         }
         break;
-      case 5:
-        HalGpioSet(HAL_GPIO_ZM516X_RESET,1);
-        osal_set_event( zigbee_TaskID, BOARD_TEST_EVT );
-        state = 6;
-        break;
       case 6:
+        HalGpioSet(HAL_GPIO_ZM516X_RESET,1);
+        osal_start_timerEx( task_id, ZIGBEE_READ_ZM516X_INFO_EVT, 100 );
+        state = 7;
+        break;
+      case 7:
+        osal_set_event( zigbee_TaskID, BOARD_TEST_EVT );
+        state = 8;
+        break;
+      case 8:
+        
         len = NPI_RxBufLen();
-        if(len >= 13)
+        NPI_ReadTransport(rbuf,len);
+        /*if(len >= 13)
         {
           NPI_ReadTransport(rbuf,13);
           led = !led;
@@ -265,7 +281,7 @@ readloacalcfg:
             HalGpioSet(HAL_GPIO_ZM516X_MOTOR1,0);
             HalGpioSet(HAL_GPIO_ZM516X_MOTOR2,1);
           }
-        }
+        }*/
     }
 
     return ( events ^ ZIGBEE_READ_ZM516X_INFO_EVT );
@@ -326,9 +342,9 @@ readloacalcfg:
   if(events & BOARD_TEST_EVT)
   {
 #if defined _USE_ZM516X__
-    const unsigned char setiodir[] = {0xDE, 0xDF, 0xEF, 0xD4, 0x20, 0x01, 0x7C};
-    const unsigned char setio[] = {0xDE, 0xDF, 0xEF, 0xD6, 0x20, 0x01, 0x7C};
-    const unsigned char readadc[] = {0xDE, 0xDF, 0xEF, 0xD7, 0x20, 0x01, 0x01};
+    const unsigned char setiodir[] = {0xDE, 0xDF, 0xEF, 0xD4, 0x00, 0x02, 0x7C};
+    const unsigned char setio[] = {0xDE, 0xDF, 0xEF, 0xD6, 0x00, 0x02, 0x7C};
+    const unsigned char readadc[] = {0xDE, 0xDF, 0xEF, 0xD7, 0x00, 0x02, 0x01};
     static unsigned char wbuf[255];
 #endif
     static unsigned char state = 0;
@@ -336,7 +352,7 @@ readloacalcfg:
     switch(state)
     {
       case 0:
-        
+#if defined _HMC5983_ON_BOARD__
         HalSensorReadReg(0x0a,wbuf,3);
         wbuf[0] = 0x00;
         //wbuf[1] = 0x00;
@@ -359,10 +375,11 @@ readloacalcfg:
         shi=temp_data/10+0x30    ;
         temp_data=temp_data%10;      //»°”‡‘ÀÀ„
         ge=temp_data+0x30; 	*/
+#endif
         
 #if defined _USE_ZM516X__
       osal_memcpy(wbuf,setiodir,7);
-      //osal_memcpy(&wbuf[4],stDevInfo.devLoacalNetAddr,2);
+      osal_memcpy(&wbuf[4],stDevInfo.devLoacalNetAddr,2);
       NPI_WriteTransport(wbuf, 7);
 #endif
       osal_start_timerEx( zigbee_TaskID, BOARD_TEST_EVT, 200 );
@@ -377,7 +394,7 @@ readloacalcfg:
       case 1:
 #if defined _USE_ZM516X__
       osal_memcpy(wbuf,setio,7);
-      //osal_memcpy(&wbuf[4],stDevInfo.devLoacalNetAddr,2);
+      osal_memcpy(&wbuf[4],stDevInfo.devLoacalNetAddr,2);
       NPI_WriteTransport(wbuf, 7);
 #endif
       HalGpioSet(HAL_GPIO_ZM516X_MOTOR1,1);
@@ -410,7 +427,7 @@ readloacalcfg:
 #if defined _USE_ZM516X__
       osal_memcpy(wbuf,setio,7);
       wbuf[6] = ~0x7C;
-      //osal_memcpy(&wbuf[4],stDevInfo.devLoacalNetAddr,2);
+      osal_memcpy(&wbuf[4],stDevInfo.devLoacalNetAddr,2);
       NPI_WriteTransport(wbuf, 7);
 #endif
 #if defined _USE_XBEE__

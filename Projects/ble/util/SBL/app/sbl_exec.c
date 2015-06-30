@@ -56,7 +56,7 @@
  * ------------------------------------------------------------------------------------------------
  */
 
-#define SBL_RW_BUF_LEN               64
+#define SBL_RW_BUF_LEN               80
 
 // Commands to Bootloader
 #define SBL_WRITE_CMD                0x01
@@ -249,6 +249,7 @@ uint8 sblPoll(void)
           {
             bitmap[loop] = 0;
           }
+          sbIdx = 0;
           rpcSte = rpcSteSOF;
         }
         break;
@@ -270,12 +271,12 @@ uint8 sblPoll(void)
             bit = pkgseq % 8;
             bitmap[index] |= (1 << bit);
             // write this pkg to flash
-            flash_addr = pkgseq * 80;
+            flash_addr = HAL_SBL_IMG_BEG + pkgseq * 80;
             if ((flash_addr % SBL_PAGE_SIZE) == 0)
             {
               HalFlashErase(flash_addr / SBL_PAGE_SIZE);
             }
-            HalFlashWrite(flash_addr, (sbBuf + SBL_REQ_DAT0), (SBL_RW_BUF_LEN / HAL_FLASH_WORD_SIZE));
+            HalFlashWrite(flash_addr, (&rpcBuf[8]), (SBL_RW_BUF_LEN / HAL_FLASH_WORD_SIZE));
             sbIdx = 0;
             rpcSte = rpcSteSOF;
           }
