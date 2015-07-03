@@ -56,7 +56,7 @@
  * ------------------------------------------------------------------------------------------------
  */
 
-#define SBL_RW_BUF_LEN               80
+#define SBL_RW_BUF_LEN               64
 
 // Commands to Bootloader
 #define SBL_WRITE_CMD                0x01
@@ -104,7 +104,7 @@
 
 // Buffer size - it has to be big enough for the largest RPC packet and overhead.
 #define SBL_BUF_SIZE                 256
-#define SBL_MAX_SIZE                80 + 8//(SBL_BUF_SIZE - RPC_FRAME_HDR_SZ - RPC_UART_FRAME_OVHD)
+#define SBL_MAX_SIZE                (SBL_BUF_SIZE - RPC_FRAME_HDR_SZ - RPC_UART_FRAME_OVHD)
 
 // The SB page boundary since all SB addresses are "actual address / flash word size".
 // Note for MSP - flash word size is 1, but 4 must be used for inter-compatibility w/ SoC.
@@ -114,7 +114,7 @@
  *                                           Typedefs
  * ------------------------------------------------------------------------------------------------
  */
-#if 0
+
 typedef enum
 {
   rpcSteSOF,
@@ -122,22 +122,13 @@ typedef enum
   rpcSteData,
   rpcSteFcs
 } rpcSte_t;
-#endif
-typedef enum
-{
-  rpcSteSOF,
-  rpcSteSOF1,
-  rpcSteSOF2,
-  rpcSteCmd,
-  rpcSteData,
-  rpcSteFcs
-} rpcSte_t;
+
 /* ------------------------------------------------------------------------------------------------
  *                                     Local Variables
  * ------------------------------------------------------------------------------------------------
  */
 
-static uint8 rpcBuf[SBL_BUF_SIZE], sbFcs, sbIdx = 0, sbLen;
+static uint8 rpcBuf[SBL_BUF_SIZE], sbFcs, sbIdx, sbLen;
 static uint8 *const sbBuf = rpcBuf+1;
 static rpcSte_t rpcSte;
 
@@ -187,162 +178,6 @@ uint8 sblInit(void)
  *
  * @return      TRUE if the downloaded code has been enabled; FALSE otherwise.
  */
-uint8 sblPoll(void)
-{
-  uint8 ch;
-  //static uint8 cnt = 0;
-  static uint16 version = 0;
-  static uint8 bitmap[ 410];
-  static uint16 pkgnum = 0,pkgseq = 0,CRC16 = 0;
-  uint16 flash_addr = 0;
-
-  while (HalUARTRead(0, &ch, 1))
-  {
-    rpcBuf[sbIdx ++] = ch;
-    switch (rpcSte)
-    {
-    case rpcSteSOF:
-      if(rpcBuf[0] == 'O')
-      {
-        rpcSte = rpcSteSOF1;
-      }
-      else
-      {
-        sbIdx = 0;
-      }
-      break;
-      
-    case rpcSteSOF1:
-      if(rpcBuf[1] == 'T')
-      {
-        rpcSte = rpcSteSOF2;
-      }
-      else
-      {
-        sbIdx = 0;
-        rpcSte = rpcSteSOF;
-      }
-      break;
-      
-    case rpcSteSOF2:
-      if(rpcBuf[2] == 'A')
-      {
-        rpcSte = rpcSteCmd;
-      }
-      else
-      {
-        sbIdx = 0;
-        rpcSte = rpcSteSOF;
-      }
-      break;
-      
-    case rpcSteCmd:
-      switch(rpcBuf[3])
-      {
-      case 0x00:
-        if(sbIdx >= 3 + 1 + 2 + 2)
-        {
-          uint16 loop;
-          version = BUILD_UINT16(rpcBuf[4],rpcBuf[5]);
-          pkgnum = BUILD_UINT16(rpcBuf[6],rpcBuf[7]);
-          for(loop = 0;loop < 410;loop ++)
-          {
-            bitmap[loop] = 0;
-          }
-          sbIdx = 0;
-          rpcSte = rpcSteSOF;
-        }
-        break;
-      case 0x01:
-        if(sbIdx >= 3 + 1 + 2 + 2 + 80)
-        {
-          if(version != BUILD_UINT16(rpcBuf[4],rpcBuf[5]))
-          {
-            sbIdx = 0;
-            rpcSte = rpcSteSOF;
-          }
-          else
-          {
-            uint8 index,bit;
-            // begin with zero
-            pkgseq = BUILD_UINT16(rpcBuf[6],rpcBuf[7]);
-            // flag this pkg has already recieved in bitmaps
-            index = pkgseq /8;
-            bit = pkgseq % 8;
-            bitmap[index] |= (1 << bit);
-            // write this pkg to flash
-            flash_addr = HAL_SBL_IMG_BEG + pkgseq * 80;
-            if ((flash_addr % SBL_PAGE_SIZE) == 0)
-            {
-              HalFlashErase(flash_addr / SBL_PAGE_SIZE);
-            }
-            HalFlashWrite(flash_addr, (&rpcBuf[8]), (SBL_RW_BUF_LEN / HAL_FLASH_WORD_SIZE));
-            sbIdx = 0;
-            rpcSte = rpcSteSOF;
-          }
-        }
-        break;
-      case 0x02:
-        if(sbIdx >= 3 + 1 + 2)
-        {
-          if(version != BUILD_UINT16(rpcBuf[4],rpcBuf[5]))
-          {
-
-          }
-          else
-          {
-            uint16 loop;
-            // check bitmap return result,
-            for(loop = 0;loop < pkgnum / 8;loop ++)
-            {
-              if(bitmap[loop] != 0xff)
-              {
-                // response gateway some pkg have not reveived
-                (void)HalUARTWrite(0, rpcBuf,3 + 1 + 2 + 1);
-                break;
-              }
-            }
-            if(loop == pkgnum / 8)
-            {
-              if(pkgnum % 8 != 0)
-              {
-                
-              }
-            }
-          }
-          sbIdx = 0;
-          rpcSte = rpcSteSOF;
-        }
-        break;
-      /*case 0x03:
-        break;*/
-      case 0x04:
-        if(sbIdx >= 3 + 1 + 2 + 2)
-        {
-          if(version != BUILD_UINT16(rpcBuf[4],rpcBuf[5]))
-          {
-
-          }
-          else
-          {
-            CRC16 = BUILD_UINT16(rpcBuf[6],rpcBuf[7]);
-            // check crc16 ,if equare to code banck,reset ,or erase all of flash and clean the static varible
-          }
-          sbIdx = 0;
-          rpcSte = rpcSteSOF;
-        }
-        break;
-      }
-      break;
-
-    default:
-      HAL_SYSTEM_RESET();
-      break;
-    }
-  }
-  return FALSE;
-}
-#if 0
 uint8 sblPoll(void)
 {
   uint8 ch;
@@ -400,7 +235,7 @@ uint8 sblPoll(void)
 
   return FALSE;
 }
-#endif
+
 /**************************************************************************************************
  * @fn          sblProc
  *
