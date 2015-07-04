@@ -256,6 +256,7 @@ static void sblProc(void)
   uint16 t16 = BUILD_UINT16(sbBuf[SBL_REQ_ADDR_LSB], sbBuf[SBL_REQ_ADDR_MSB]) + HAL_SBL_IMG_BEG;
   uint8 len = 1, rsp = SBL_SUCCESS;
   uint16 crc[2];
+  static uint16 crcword = 0;
 
   switch (sbBuf[RPC_POS_CMD1])
   {
@@ -266,7 +267,7 @@ static void sblProc(void)
     }
     HalFlashWrite(t16, (sbBuf + SBL_REQ_DAT0), (SBL_RW_BUF_LEN / HAL_FLASH_WORD_SIZE));
     break;
-
+/*
   case SBL_READ_CMD:
     len = SBL_RW_BUF_LEN + SBL_READ_HDR_LEN;
     sbBuf[SBL_RSP_ADDR_MSB] = sbBuf[SBL_REQ_ADDR_MSB];
@@ -275,8 +276,15 @@ static void sblProc(void)
     HalFlashRead(t16 / SBL_PAGE_SIZE,
                 (t16 % SBL_PAGE_SIZE) << 2, (sbBuf + SBL_RSP_DAT0), SBL_RW_BUF_LEN);
     break;
-
+*/
   case SBL_ENABLE_CMD:
+    crcword = *(uint16 *)&sbBuf[SBL_REQ_ADDR_LSB];
+    if(calcCRC() != crcword)
+    {
+      rsp = SBL_VALIDATE_FAILED;
+      break;
+    }
+
     HalFlashRead(HAL_SBL_IMG_CRC / SBL_PAGE_SIZE,
                 (HAL_SBL_IMG_CRC % SBL_PAGE_SIZE) << 2, (uint8 *)crc, sizeof(crc));
 
@@ -329,24 +337,24 @@ static void sblProc(void)
  */
 static uint8 sblResp(void)
 {
-  uint8 fcs = 0, len = sbBuf[RPC_POS_LEN] + RPC_FRAME_HDR_SZ;
+  //uint8 fcs = 0, len = sbBuf[RPC_POS_LEN] + RPC_FRAME_HDR_SZ;
   uint8 rtrn = FALSE;
 
-  for (uint8 idx = RPC_POS_LEN; idx < len; idx++)
+  /*for (uint8 idx = RPC_POS_LEN; idx < len; idx++)
   {
     fcs ^= sbBuf[idx];
   }
-  sbBuf[len] = fcs;
+  sbBuf[len] = fcs;*/
 
   if ((sbBuf[RPC_POS_CMD1] == (SBL_ENABLE_CMD | SBL_RSP_MASK)) &&
       (sbBuf[RPC_POS_DAT0] == SBL_SUCCESS))
   {
-    len++;  // Send an extra garbage byte to flush the last good one before resetting.
+    //len++;  // Send an extra garbage byte to flush the last good one before resetting.
     rtrn = TRUE;
   }
 
-  rpcBuf[0] = RPC_UART_SOF;
-  (void)HalUARTWrite(0, rpcBuf, len + RPC_UART_FRAME_OVHD);
+  //rpcBuf[0] = RPC_UART_SOF;
+  //(void)HalUARTWrite(0, rpcBuf, len + RPC_UART_FRAME_OVHD);
 
   return rtrn;
 }
@@ -421,7 +429,7 @@ static uint8 checkRC(void)
   {
     crc[1] = calcCRC();
     crc[0] = 0xFFFF;
-    while (!HalAdcCheckVdd(VDD_MIN_NV));
+    //while (!HalAdcCheckVdd(VDD_MIN_NV));
     HalFlashWrite(HAL_SBL_IMG_CRC, (uint8 *)crc, 1);
     HalFlashRead(HAL_SBL_IMG_CRC / SBL_PAGE_SIZE,
                 (HAL_SBL_IMG_CRC % SBL_PAGE_SIZE) << 2, (uint8 *)crc, HAL_FLASH_WORD_SIZE);
@@ -454,7 +462,7 @@ static uint16 crc16(uint16 crc, uint8 val)
 
   for (cnt = 0; cnt < 8; cnt++, val <<= 1)
   {
-    uint8 msb = (crc & 0x8000) ? 1 : 0;
+    volatile uint8 msb = (crc & 0x8000) ? 1 : 0;
 
     crc <<= 1;
     if (val & 0x80)  crc |= 0x0001;

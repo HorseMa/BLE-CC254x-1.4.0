@@ -108,7 +108,7 @@ void main(void)
     }
   }
 
-  while (!HalAdcCheckVdd(VDD_MIN_NV));
+  //while (!HalAdcCheckVdd(VDD_MIN_NV));
   sblRun();
   HAL_SYSTEM_RESET();
 }

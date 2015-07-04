@@ -357,7 +357,7 @@
         <option>
           <name>CCAllowList</name>
           <version>1</version>
-          <state>11111</state>
+          <state>10010</state>
         </option>
         <option>
           <name>CCObjUseModuleName</name>
@@ -470,7 +470,7 @@
         </option>
         <option>
           <name>CCOptLevel</name>
-          <state>3</state>
+          <state>2</state>
         </option>
         <option>
           <name>CCOptStrategy</name>
@@ -479,7 +479,7 @@
         </option>
         <option>
           <name>CCOptLevelSlave</name>
-          <state>3</state>
+          <state>2</state>
         </option>
         <option>
           <name>CompilerMisraRules04</name>
@@ -712,7 +712,7 @@
         </option>
         <option>
           <name>OutputFile</name>
-          <state>SBL.d51</state>
+          <state>sbl.d51</state>
         </option>
         <option>
           <name>OutputFormat</name>
